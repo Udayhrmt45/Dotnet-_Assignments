@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FirstWebAPI/FirstWebAPI.csproj" />
+  <Project Path="WebAPI.common/WebAPI.common.csproj" />
+  <Project Path="WebAPI.data/WebAPI.data.csproj" />
+  <Project Path="WebAPI.service/WebAPI.service.csproj" />
+  <Project Path="WebAPI.store/WebAPI.store.csproj" />
+</Solution>
