@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstraction\" />
-    <Folder Include="Implementation\" />
+    <ProjectReference Include="..\WebAPI.common\WebAPI.common.csproj" />
+    <ProjectReference Include="..\WebAPI.store\WebAPI.store.csproj" />
   </ItemGroup>
 
 </Project>

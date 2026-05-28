@@ -1,81 +1,138 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.common.Models;
+using WebAPI.service.Abstraction;
 
 namespace FirstWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class FirstWebAPIController : ControllerBase
-    {
-        private static List<Employee> employees = new List<Employee>
-        {
-            new Employee { Id = 1, Name = "John Doe", Department = "HR" },
-            new Employee { Id = 2, Name = "Jane Smith", Department = "IT" },
-            new Employee { Id = 3, Name = "Bob Johnson", Department = "Finance" }
-        };
+    {   
+            private readonly IEmployeeService _employeeService;
 
-        //Get all
-        [HttpGet]
-        public IActionResult GetEmployee()
-        {
-            return Ok(employees);
-        }
-
-        //get by Id
-
-        [HttpGet("byId")]
-        public IActionResult GetEmployeeById([FromQuery] int id)
-        {
-            var employee = employees.FirstOrDefault(x => x.Id == id);
-
-            if (employee == null)
+            public FirstWebAPIController(IEmployeeService employeeService)
             {
-                return NotFound("Employee not found");
-            }
-            return Ok(employee);
-        }
-
-        //post
-        [HttpPost]
-        public IActionResult AddEmployee(Employee employee)
-        {
-            employees.Add(employee);
-            return Ok("Employee Added Successfully");
-        }
-
-        //update - put
-        [HttpPut]
-        public IActionResult UpdateEmployee([FromQuery] int id, [FromBody] Employee updatedEmployee) 
-        { 
-            var employee = employees.FirstOrDefault(e => e.Id == id);
-
-            if(employee == null)
-            {
-                return NotFound("Employee not found!");
+                _employeeService = employeeService;
             }
 
-            employee.Name = updatedEmployee.Name;
-            employee.Department = updatedEmployee.Department;
-
-            return Ok("Employee Details updated successfully!");
-        }
-
-        //delete
-        [HttpDelete]
-        public IActionResult DeleteEmployee([FromQuery] int id)
-        {
-            var employee = employees.FirstOrDefault(e => e.Id == id);
-            if (employee == null)
+            /// <summary>
+            /// Get all employees
+            /// </summary>
+            [HttpGet]
+            public async Task<IActionResult> GetEmployees()
             {
-                return NotFound("Employee not found!");
+                try
+                {
+                    var employees = await _employeeService.GetEmployeesAsync();
+
+                    return Ok(employees);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, AppConstants.SomethingWentWrong);
+                }
             }
-            employees.Remove(employee);
-            return Ok("Employee deleted successfully!");
 
-        }
+            /// <summary>
+            /// Get employee by id
+            /// </summary>
+            [HttpGet("byid")]
+            public async Task<IActionResult> GetEmployeeById([FromQuery] string guidId)
+            {
+                try
+                {
+                    if (!Guid.TryParseExact(guidId, "N", out Guid parsedGuid))
+                    {
+                        return BadRequest("Invalid Guid Format");
+                    }
+                    var employee = await _employeeService.GetEmployeeByIdAsync(parsedGuid);
 
+                    if (employee == null)
+                    {
+                        return NotFound(AppConstants.EmployeeNotFound);
+                    }
 
-    }
+                    return Ok(employee);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, AppConstants.SomethingWentWrong);
+                }
+            }
 
+            /// <summary>
+            /// Insert employee
+            /// </summary>
+            [HttpPost]
+            public async Task<IActionResult> InsertEmployee([FromBody] Employee employee)
+            {
+                try
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+
+                    await _employeeService.InsertEmployeeAsync(employee);
+
+                    return Ok(AppConstants.EmployeeAdded);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, AppConstants.SomethingWentWrong);
+                }
+            }
+
+            /// <summary>
+            /// Update employee
+            /// </summary>
+            [HttpPut]
+            public async Task<IActionResult> UpdateEmployee([FromBody] Employee employee)
+            {
+                try
+                {
+                    var isUpdated = await _employeeService.UpdateEmployeeAsync(employee);
+
+                    if (!isUpdated)
+                    {
+                        return NotFound(AppConstants.EmployeeNotFound);
+                    }
+
+                    return Ok(AppConstants.EmployeeUpdated);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, AppConstants.SomethingWentWrong);
+                }
+            }
+
+            /// <summary>
+            /// Delete employee
+            /// </summary>
+            [HttpDelete]
+            public async Task<IActionResult> DeleteEmployee([FromQuery] string guidId)
+            {
+                try
+                {
+                    if (!Guid.TryParseExact(guidId, "N", out Guid parsedGuid))
+                    {
+                        return BadRequest("Invalid Guid Format");
+                    }
+
+                    var isDeleted = await _employeeService.DeleteEmployeeAsync(parsedGuid);
+
+                    if (!isDeleted)
+                    {
+                        return NotFound(AppConstants.EmployeeNotFound);
+                    }
+
+                    return Ok(AppConstants.EmployeeDeleted);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, AppConstants.SomethingWentWrong);
+                }
+            }
+        
+    }   
 }

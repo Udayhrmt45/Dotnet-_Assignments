@@ -1,9 +1,19 @@
 using Microsoft.OpenApi;
+using WebAPI.service.Implementation;
+using WebAPI.service.Abstraction;
+using WebAPI.store.Implementation;
+using WebAPI.store.Abstraction;
+using WebAPI.data.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IEmployeeStore, EmployeeStore>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+builder.Services.AddScoped<DbConnectionFactory>();
 
 // Register Swagger services
 builder.Services.AddEndpointsApiExplorer();

@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebAPI.common\WebAPI.common.csproj" />
-    <ProjectReference Include="..\WebAPI.data\WebAPI.data.csproj" />
+    <ProjectReference Include="..\CollegeManagement.Common\CollegeManagement.Common.csproj" />
+    <ProjectReference Include="..\CollegeManagement.Data\CollegeManagement.Data.csproj" />
   </ItemGroup>
 
 </Project>

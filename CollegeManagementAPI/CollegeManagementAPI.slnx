@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CollegeManagement.Common/CollegeManagement.Common.csproj" />
+  <Project Path="CollegeManagement.Data/CollegeManagement.Data.csproj" />
+  <Project Path="CollegeManagement.Service/CollegeManagement.Service.csproj" />
+  <Project Path="CollegeManagement.Store/CollegeManagement.Store.csproj" />
+  <Project Path="CollegeManagementAPI/CollegeManagementAPI.csproj" />
+</Solution>
